@@ -1,6 +1,8 @@
 package org.edupoll.exception.config;
 
 import org.edupoll.dto.error.ErrorResponse;
+import org.edupoll.exception.NotFoundException;
+import org.edupoll.exception.UserJoinErrorException;
 import org.edupoll.exception.UserLoginErrorExcetion;
 import org.edupoll.exception.ValidCodeErrorException;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -10,11 +12,20 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import com.auth0.jwt.exceptions.JWTDecodeException;
+import com.auth0.jwt.exceptions.TokenExpiredException;
+
 @ControllerAdvice
 public class ExceptionHandleConfig {
 
 	@ExceptionHandler(DataIntegrityViolationException.class)
 	public ResponseEntity<ErrorResponse> UserJoinErrorExceptionHandle(DataIntegrityViolationException e) {
+		ErrorResponse error = new ErrorResponse(e.getMessage(), System.currentTimeMillis());
+		return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+	}
+	
+	@ExceptionHandler(UserJoinErrorException.class)
+	public ResponseEntity<ErrorResponse> UserJoinErrorExceptionHandle(UserJoinErrorException e) {
 		ErrorResponse error = new ErrorResponse(e.getMessage(), System.currentTimeMillis());
 		return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
 	}
@@ -42,4 +53,17 @@ public class ExceptionHandleConfig {
 		ErrorResponse error = new ErrorResponse(e.getMessage(), System.currentTimeMillis());
 		return new ResponseEntity<ErrorResponse>(error, HttpStatus.BAD_REQUEST);
 	}
+	
+	@ExceptionHandler({JWTDecodeException.class, TokenExpiredException.class})
+	public ResponseEntity<ErrorResponse> JWTExceptionHandle(Exception e) {
+		ErrorResponse error = new ErrorResponse("유효한 토큰이 아닙니다.", System.currentTimeMillis());
+		return new ResponseEntity<ErrorResponse>(error, HttpStatus.UNAUTHORIZED);
+	}
+	
+	@ExceptionHandler(NotFoundException.class)
+	public ResponseEntity<ErrorResponse> JWTExceptionHandle(NotFoundException e) {
+		ErrorResponse error = new ErrorResponse(e.getMessage(), System.currentTimeMillis());
+		return new ResponseEntity<ErrorResponse>(error, HttpStatus.UNAUTHORIZED);
+	}
+	
 }

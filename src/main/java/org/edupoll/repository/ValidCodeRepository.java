@@ -7,4 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ValidCodeRepository extends JpaRepository<ValidCode, Long>{
 	Optional<ValidCode> findByEmail(String email);
+	
+	ValidCode deleteByEmail(String email);
 }
