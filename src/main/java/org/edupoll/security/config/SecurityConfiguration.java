@@ -4,6 +4,7 @@ import org.edupoll.security.support.JWTAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
@@ -29,10 +30,9 @@ public class SecurityConfiguration {
 		http.sessionManagement(t-> t.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 		
 		http.authorizeHttpRequests(t-> t
-				.requestMatchers("/api/v1/user/private/**") //.hasAuthority("ROLE_VIP")
-				.authenticated()
-				.anyRequest()
-				.permitAll());
+				.requestMatchers("/api/v1/user/private/**").authenticated()
+				.requestMatchers(HttpMethod.POST, "/api/v1/feed/storage").authenticated()
+				.anyRequest().permitAll());
 		
 		http.addFilterBefore(jwtAuthenticationFilter, AuthorizationFilter.class);
 		

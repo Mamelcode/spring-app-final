@@ -14,7 +14,6 @@ import org.edupoll.dto.user.UserPasswordData;
 import org.edupoll.dto.user.UserResponseData;
 import org.edupoll.dto.user.UserValidData;
 import org.edupoll.dto.validcode.ValidCodeRequest;
-import org.edupoll.entity.ProfileImage;
 import org.edupoll.entity.User;
 import org.edupoll.entity.ValidCode;
 import org.edupoll.exception.NotFoundException;
@@ -29,11 +28,10 @@ import org.springframework.core.io.FileUrlResource;
 import org.springframework.core.io.Resource;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
-import org.springframework.web.HttpMediaTypeNotSupportedException;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.transaction.NotSupportedException;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -77,7 +75,7 @@ public class UserService {
 	
 	
 	// 유저 인증
-	@Transactional
+	@Transactional(readOnly = true)
 	public UserValidData vaildByUser(UserValidData data) throws UserLoginErrorExcetion {		
 		User findUser = userRepository.findByEmail(data.getEmail())
 				.orElseThrow(() -> new UserLoginErrorExcetion("존재하지 않는 아이디 입니다."));
@@ -133,7 +131,7 @@ public class UserService {
 		
 	}
 
-	@Transactional
+	@Transactional(readOnly = true)
 	public void emailAvailableCheck(ValidCodeRequest data) throws UserJoinErrorException {
 		
 		if(userRepository.findByEmail(data.getEmail()).isPresent()) {
@@ -141,7 +139,7 @@ public class UserService {
 		}
 	}
 	
-	@Transactional
+	@Transactional(readOnly = true)
 	public UserResponseData getUserDetail(String email) throws UserLoginErrorExcetion {
 		User user = userRepository.findByEmail(email)
 					.orElseThrow(() -> new UserLoginErrorExcetion("존재하지않는 이메일입니다."));
