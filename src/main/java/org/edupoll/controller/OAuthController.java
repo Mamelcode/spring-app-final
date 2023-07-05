@@ -46,7 +46,7 @@ public class OAuthController {
 	@GetMapping("/kakao")
 	public ResponseEntity<OAuthSignResponse> oauthKakaoHandle() {
 		var response = new OAuthSignResponse(200, "https://kauth.kakao.com/oauth/authorize?"
-				+ "response_type=code&client_id=67c8ded12ce74471c10663984f114b81&redirect_uri=http://192.168.4.59:3000/flow/kakao/callback");
+				+ "response_type=code&client_id=67c8ded12ce74471c10663984f114b81&redirect_uri="+kakaoRedirectURL+"");
 		
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
